@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">NetologyDiplom</string>
+    <string name="hint_note_title">Название</string>
+    <string name="hint_note_description">Описание</string>
+    <string name="chb_deadline">есть дедлайн</string>
+    <string name="Ok">Добавить</string>
+    <string name="cancel">Отменить</string>
+</resources>
