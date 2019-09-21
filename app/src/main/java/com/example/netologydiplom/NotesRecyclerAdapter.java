@@ -1,38 +1,39 @@
 package com.example.netologydiplom;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class NotesRecyclerAdapter extends RecyclerView.Adapter<NotesRecyclerAdapter.ViewHolder> {
-    private List<Note> notesModels = new ArrayList<>();
+    private List<Note> notesModels;
     private Context context;
-    private OnNoteListener mOnNoteListener;
 
     //конструктор адаптера
-    public NotesRecyclerAdapter(Context context, List<Note> notesModels, OnNoteListener mOnNoteListener) {
+    public NotesRecyclerAdapter(Context context, List<Note> notesModels) {
         this.context = context;
         this.notesModels = notesModels;
-        this.mOnNoteListener = mOnNoteListener;
     }
 
     @NonNull
     @Override
     public NotesRecyclerAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
-        return new ViewHolder(view, mOnNoteListener);
+        return new ViewHolder(view);
     }
 
+    //заполняем элемент списка данными
     @Override
     public void onBindViewHolder(@NonNull NotesRecyclerAdapter.ViewHolder holder, int position) {
         SimpleDateFormat formatter = new SimpleDateFormat(Constants.DATE_FORMAT);
@@ -41,11 +42,11 @@ public class NotesRecyclerAdapter extends RecyclerView.Adapter<NotesRecyclerAdap
         String noteDescription = notesModels.get(position).getNoteDescription();
         Date dateDeadline = notesModels.get(position).getDateDeadline();
 
-        if (!noteTitle.equals(null)) {
+        if (!noteTitle.equals("")) {
             holder.tvTitle.setText(noteTitle);
             holder.tvTitle.setVisibility(View.VISIBLE);
         }
-        if (!noteDescription.equals(null)) {
+        if (!noteDescription.equals("")) {
             holder.tvDescription.setText(noteDescription);
             holder.tvDescription.setVisibility(View.VISIBLE);
         }
@@ -64,39 +65,63 @@ public class NotesRecyclerAdapter extends RecyclerView.Adapter<NotesRecyclerAdap
         return notesModels.get(position);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvTitle;
         TextView tvDescription;
         TextView tvDate;
-        OnNoteListener onNoteListener;
 
-        //конструктор, находим все доступные поля на itemView и определяем слушателя кнопок
-        public ViewHolder(View itemView, OnNoteListener onNoteListener) {
+        //конструктор, находим все доступные поля на itemView
+        public ViewHolder(View itemView) {
             super(itemView);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvDescription = itemView.findViewById(R.id.tv_desc);
             tvDate = itemView.findViewById(R.id.tv_date);
-            this.onNoteListener = onNoteListener;
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
-        }
 
-        @Override
-        public void onClick(View view) {
-            onNoteListener.onNoteClick(getAdapterPosition());
-        }
-
-        @Override
-        public boolean onLongClick(View view) {
-            onNoteListener.onNoteLongClick(getAdapterPosition());
-            return true;
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    editNote(getAdapterPosition());
+                }
+            });
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    removeNote(getAdapterPosition());
+                    return true;
+                }
+            });
         }
     }
 
-    //интерфейс, переопределяем нажатия кнопок
-    public interface OnNoteListener {
-        void onNoteClick(int position);
+    //открытие активити для редактирования существующей записи
+    private void editNote(int position) {
+        Note note = notesModels.get(position);
+        Intent intent = new Intent(context, AddNoteActivity.class);
+        intent.putExtra("id", note.getId());
+        context.startActivity(intent);
+    }
 
-        void onNoteLongClick(int position);
+    //удаление выделенной записи
+    private void removeNote(final int position) {
+        final NotesRepository noteRepository = App.getInstance().getNotesRepository();
+        final Note note = notesModels.get(position);
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+        dialogBuilder.setMessage(R.string.dialog_note_message_delete);
+        dialogBuilder.setTitle(R.string.dialog_note_title_delete);
+        dialogBuilder.setIcon(R.drawable.ic_delete);
+        dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                noteRepository.deleteNote(note); //удаляем данные из базы
+                notesModels.remove(position); //удаляем данны из текущего списка
+                notifyDataSetChanged(); //уведомляем адаптер об изменениях
+            }
+        });
+        dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+            }
+        });
+        AlertDialog dialog = dialogBuilder.create();
+        dialog.show();
     }
 }

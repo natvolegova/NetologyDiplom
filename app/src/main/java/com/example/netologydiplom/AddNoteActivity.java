@@ -1,5 +1,6 @@
 package com.example.netologydiplom;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,7 +8,10 @@ import androidx.appcompat.widget.Toolbar;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,10 +28,10 @@ import java.util.Date;
 
 public class AddNoteActivity extends AppCompatActivity {
     private Toolbar toolbar;
+    private TextView tvMessage;
     private EditText etTitle, etDescription, etDeadlineDate;
     private LinearLayout llDeadlineBox;
     private CheckBox chbDeadLine;
-    private Button btnAdd, btnCalendarDeadline;
 
     private NotesRepository noteRepository;
     private int noteid;
@@ -41,13 +46,13 @@ public class AddNoteActivity extends AppCompatActivity {
         noteRepository = App.getInstance().getNotesRepository();
 
         initView();
+
         //получение данных из intent
         Intent intent = getIntent();
         noteid = intent.getIntExtra("id", -1);
         if (noteid >= 0) {
             initNoteValue();
         }
-
     }
 
     //заполнение полей данными существующей записи
@@ -62,9 +67,8 @@ public class AddNoteActivity extends AppCompatActivity {
             etDeadlineDate.setText(formatter.format(dateDeadline));
         }
     }
-
-    //сохранение записи
-    public void onSaveClick(View view) {
+    //сохраняем запись
+    public void onSaveNoteClick() {
         String nameStr = etTitle.getText().toString();
         String descStr = etDescription.getText().toString();
         String deadlineDateStr = etDeadlineDate.getText().toString();
@@ -78,21 +82,27 @@ public class AddNoteActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        //проверяем данные получены из intent
-        if (noteid >= 0) {
-            //  обновляем существующие данные
-            currentNote.setNoteTitle(nameStr);
-            currentNote.setNoteDescription(descStr);
-            currentNote.setDatePub(date);
-            currentNote.setDateDeadline(dateDeadline);
-            currentNote.setIsDeadLine(isDeadline);
-            noteRepository.updateNote(currentNote);
+        //проверка на пустые данные
+        if (nameStr.equals("") && descStr.equals("") && deadlineDateStr.equals("")) {
+            //все данные пустые, показывем сообщение об ошибке
+            showErrorMessage(R.string.msg_note_add_error);
         } else {
-            // добавляем новые данные
-            Note note = new Note(nameStr, date, dateDeadline, isDeadline, descStr);
-            noteRepository.addNote(note);
+            //проверяем данные получены из intent
+            if (noteid >= 0) {
+                // обновляем существующие данные
+                currentNote.setNoteTitle(nameStr);
+                currentNote.setNoteDescription(descStr);
+                currentNote.setDatePub(date);
+                currentNote.setDateDeadline(dateDeadline);
+                currentNote.setIsDeadLine(isDeadline);
+                noteRepository.updateNote(currentNote);
+            } else {
+                // добавляем новые данные
+                Note note = new Note(nameStr, date, dateDeadline, isDeadline, descStr);
+                noteRepository.addNote(note);
+            }
+            finish();
         }
-        finish();
     }
 
     //показ диалогового окна с выбором даты
@@ -130,6 +140,7 @@ public class AddNoteActivity extends AppCompatActivity {
         });
         dialogBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
+                finish();
             }
         });
         AlertDialog calendarDialog = dialogBuilder.create();
@@ -155,13 +166,45 @@ public class AddNoteActivity extends AppCompatActivity {
         chbDeadLine.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(compoundButton.isChecked()){
+                if (compoundButton.isChecked()) {
                     llDeadlineBox.setVisibility(View.VISIBLE);
-                }else{
+                } else {
                     llDeadlineBox.setVisibility(View.GONE);
                     etDeadlineDate.setText("");
                 }
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem settingsMenuItem = menu.findItem(R.id.settings);
+        settingsMenuItem.setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                onSaveNoteClick();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showErrorMessage(final int message) {
+        tvMessage = findViewById(R.id.tv_message);
+        CountDownTimer timer = new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {
+                tvMessage.setVisibility(View.VISIBLE);
+                tvMessage.setText(getResources().getText(message));
+            }
+
+            public void onFinish() {
+                tvMessage.setVisibility(View.GONE);
+            }
+        };
+        timer.start();
     }
 }

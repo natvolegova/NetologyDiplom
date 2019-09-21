@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:gravity="center_horizontal|center_vertical"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_xxl"
+    tools:context=".StartActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/TextAppearance.AppCompat.Display1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_enter_pass"
+        android:textColor="@android:color/white" />
+
+    <LinearLayout
+        android:id="@+id/ll_pass_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:layout_marginBottom="@dimen/spacing_lg"
+        android:divider="@drawable/spacer_medium"
+        android:showDividers="middle"
+        android:orientation="horizontal">
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/spacing_lg"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
+
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:columnCount="3"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_01"
+            android:text="@string/num_1" />
+
+        <Button
+            android:id="@+id/btn_02"
+            android:text="@string/num_2" />
+
+        <Button
+            android:id="@+id/btn_03"
+            android:text="@string/num_3" />
+
+        <Button
+            android:id="@+id/btn_04"
+            android:text="@string/num_4" />
+
+        <Button
+            android:id="@+id/btn_05"
+            android:text="@string/num_5" />
+
+        <Button
+            android:id="@+id/btn_06"
+            android:text="@string/num_6" />
+
+        <Button
+            android:id="@+id/btn_07"
+            android:text="@string/num_7" />
+
+        <Button
+            android:id="@+id/btn_08"
+            android:text="@string/num_8" />
+
+        <Button
+            android:id="@+id/btn_09"
+            android:text="@string/num_9" />
+
+        <Button
+            android:id="@+id/btn_00"
+            android:layout_column="1"
+            android:text="@string/num_0" />
+
+        <Button
+            android:id="@+id/btn_back"
+            android:text="@string/num_back" />
+    </GridLayout>
+
+</LinearLayout>

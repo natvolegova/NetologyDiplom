@@ -6,6 +6,22 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorLightGrey</item>
     </style>
-
+    <style name="Toolbar">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="android:background">@color/colorPrimary</item>
+    </style>
+    <style name="view_pass_dark">
+        <item name="android:layout_width">@dimen/corner_radius_lg</item>
+        <item name="android:layout_height">@dimen/corner_radius_lg</item>
+        <item name="android:background">@drawable/pass_round_dark</item>
+    </style>
+    <style name="view_pass_light">
+        <item name="android:layout_width">@dimen/corner_radius_lg</item>
+        <item name="android:layout_height">@dimen/corner_radius_lg</item>
+        <item name="android:background">@drawable/pass_round_light</item>
+    </style>
 </resources>
