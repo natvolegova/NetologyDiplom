@@ -20,6 +20,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -44,15 +45,14 @@ public class AddNoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_note);
         formatter = new SimpleDateFormat(Constants.DATE_FORMAT);
         noteRepository = App.getInstance().getNotesRepository();
-
         initView();
-
         //получение данных из intent
         Intent intent = getIntent();
         noteid = intent.getIntExtra("id", -1);
         if (noteid >= 0) {
             initNoteValue();
         }
+
     }
 
     //заполнение полей данными существующей записи
@@ -163,10 +163,12 @@ public class AddNoteActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        chbDeadLine.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        chbDeadLine.setOnCheckedChangeListener (new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (compoundButton.isChecked()) {
+                        Date date = Calendar.getInstance().getTime();
+                        etDeadlineDate.setText(formatter.format(date));
                     llDeadlineBox.setVisibility(View.VISIBLE);
                 } else {
                     llDeadlineBox.setVisibility(View.GONE);
@@ -200,7 +202,6 @@ public class AddNoteActivity extends AppCompatActivity {
                 tvMessage.setVisibility(View.VISIBLE);
                 tvMessage.setText(getResources().getText(message));
             }
-
             public void onFinish() {
                 tvMessage.setVisibility(View.GONE);
             }

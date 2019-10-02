@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SettingsActivity extends AppCompatActivity {
     private Toolbar toolbar;
@@ -97,7 +98,6 @@ public class SettingsActivity extends AppCompatActivity {
                 tvMessage.setVisibility(View.VISIBLE);
                 tvMessage.setText(getResources().getText(message));
             }
-
             public void onFinish() {
                 tvMessage.setVisibility(View.GONE);
             }

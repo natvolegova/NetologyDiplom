@@ -28,4 +28,5 @@
     <string name="msg_pass_correct">Пароль верный</string>
     <string name="dialog_note_message_delete">Вы действительно хотите удалить существующую запись?</string>
     <string name="dialog_note_title_delete">Внимание</string>
+    <string name="msg_back_pressed">Нажмите еще раз чтобы выйти</string>
 </resources>

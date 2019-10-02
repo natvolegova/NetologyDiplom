@@ -28,6 +28,10 @@ public class StartActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+    }
+
+    protected void onResume() {
+        super.onResume();
         keyStore = App.getInstance().getKeystore();
         //первоначальная настройка, проверяем есть ли пароль
         if (keyStore.hasPin(this)) {
@@ -134,10 +138,12 @@ public class StartActivity extends AppCompatActivity {
 
     //добавляем цифры
     private void addResult(String value) {
-        resultText += value;
-        currentInputValue++;
-        changeVisualPass(currentInputValue, "visualLight");
-        checkResult();
+        if (resultText.length() < Constants.PASS_LENGTH) {
+            resultText += value;
+            currentInputValue++;
+            changeVisualPass(currentInputValue, "visualLight");
+            checkResult();
+        }
     }
 
     //удаляем цифры
@@ -180,10 +186,18 @@ public class StartActivity extends AppCompatActivity {
                 tvMessage.setVisibility(View.VISIBLE);
                 tvMessage.setText(getResources().getText(message));
             }
+
             public void onFinish() {
                 tvMessage.setVisibility(View.GONE);
             }
         };
         timer.start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        return;
     }
 }

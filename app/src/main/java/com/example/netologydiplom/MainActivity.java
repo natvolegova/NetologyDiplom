@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -24,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private NotesRepository noteRepository;
     private NotesRecyclerAdapter recyclerAdapter;
     private List<Note> noteList = new ArrayList<>();
+    private long backPressedTime;
+    private Toast toastBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,5 +83,17 @@ public class MainActivity extends AppCompatActivity {
         }
         startActivity(intent);
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()) {
+            toastBack.cancel();
+            finishAffinity();
+        } else {
+            toastBack = Toast.makeText(this, getResources().getText(R.string.msg_back_pressed), Toast.LENGTH_SHORT);
+            toastBack.show();
+        }
+        backPressedTime = System.currentTimeMillis();
     }
 }
